@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/article_model.dart';
 import '../view_models/article_view_model.dart';
-import '../widgets/article_widget.dart';
+import 'article_page.dart';
 import '../summary.dart';
 
 class ArticleView extends StatefulWidget {
@@ -35,28 +35,6 @@ class _ArticleViewState extends State<ArticleView> {
             };
           }
         ),
-      ),
-    );
-  }
-}
-
-class ArticlePage extends StatelessWidget {
-  final Summary summary;
-  final VoidCallback nextArticle;
-
-  const ArticlePage({super.key, required this.summary, required this.nextArticle});
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView (
-      child: Column(
-        children: [
-          ArticleWidget(summary: summary),
-          ElevatedButton(
-            onPressed: nextArticle, 
-            child: Text('Next random article')
-          )
-        ],
       ),
     );
   }
