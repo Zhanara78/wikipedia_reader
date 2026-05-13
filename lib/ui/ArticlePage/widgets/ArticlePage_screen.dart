@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../summary.dart';
-import '../../../data/Repository/RandomArticleRepository.dart';
-import '../view_models/ArticleViewModel.dart';
+import '../view_models/ArticleCubit.dart';
 import 'ArticlePage.dart';
 
 class ArticleView extends StatefulWidget {
@@ -13,12 +13,10 @@ class ArticleView extends StatefulWidget {
 }
 
 class _ArticleViewState extends State<ArticleView> {
-  final viewModel = ArticleViewModel(RandomArticleRepository());
-
   @override
   void initState() {
     super.initState();
-    viewModel.fetchArticle();
+    context.read<ArticleCubit>().getNewArticle();
   }
 
   @override
@@ -28,25 +26,18 @@ class _ArticleViewState extends State<ArticleView> {
         title: const Text("Wikipedia"),
       ),
       body: Center(
-        child: ListenableBuilder(
-          listenable: viewModel,
-          builder: (context, _) {
-            return switch ((
-              viewModel.isLoading,
-              viewModel.summary,
-              viewModel.error,
-            )) {
-              (true, _, _) => const CircularProgressIndicator(),
+        child: BlocBuilder<ArticleCubit, Summary?>(
+          builder: (context, summary) {
+            if (summary == null) {
+              return const CircularProgressIndicator();
+            }
 
-              (_, _, Exception e) => Text("Error: $e"),
-
-              (_, Summary summary, _) => ArticlePage(
-                  summary: summary,
-                  nextArticle: viewModel.fetchArticle,
-                ),
-
-              _ => const Text("Something went wrong"),
-            };
+            return ArticlePage(
+              summary: summary,
+              nextArticle: () {
+                context.read<ArticleCubit>().getNewArticle();
+              },
+            );
           },
         ),
       ),
